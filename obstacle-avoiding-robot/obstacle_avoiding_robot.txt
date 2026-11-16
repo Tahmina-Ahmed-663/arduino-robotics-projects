@@ -1,0 +1,65 @@
+int trigPin = 3;      // Trig Pin Of HC-SR04
+int echoPin = 2;     // Echo Pin Of HC-SR04
+int revleft4 = 4; // Motor Pins
+int fwdleft5 = 5;
+
+int revright6 = 6;
+int fwdright7 = 7;
+int ena = 9;
+int enb = 10 ;
+long duration, distance ;
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(revleft4, OUTPUT); // Set Motor Pins As O/P
+  pinMode(fwdleft5, OUTPUT);
+  pinMode(revright6, OUTPUT);
+  pinMode(fwdright7, OUTPUT);
+  pinMode(trigPin, OUTPUT); // Set Trig Pin As O/P To Transmit Waves
+  pinMode(echoPin, INPUT); //Set Echo Pin As I/P To Recieve Reflected Waves
+  pinMode(ena,OUTPUT);
+  pinMode(enb,OUTPUT);
+}
+
+void loop() {
+
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);   
+  digitalWrite(trigPin, HIGH); // Transmit Waves For 10us
+  delayMicroseconds(10);
+  duration = pulseIn(echoPin, HIGH); // Recieve Reflected Waves
+  distance = duration * 0.034 / 2 ; // Get Distance        s = t * v
+  Serial.println(distance);
+  delay(10);
+  if (distance > 10) // Condition For Absence Of Obstacle            
+  {
+     digitalWrite(fwdright7, HIGH); // Move Forward
+    digitalWrite(revright6, LOW);
+    digitalWrite(fwdleft5, HIGH);                                
+    digitalWrite(revleft4, LOW);    
+    analogWrite(ena,80);   
+     analogWrite(enb,80); 
+                                                    
+  }
+
+  if (distance < 10) // Condition For Presence Of Obstacle
+  {
+
+    digitalWrite(fwdright7, LOW); // Move Backward             
+    digitalWrite(revright6, HIGH);
+    digitalWrite(fwdleft5, LOW);                                
+    digitalWrite(revleft4, HIGH);
+    analogWrite(ena,80);   
+     analogWrite(enb,80); 
+    delay(1000);
+
+    digitalWrite(fwdright7, HIGH); // Move Left       
+    digitalWrite(revright6, LOW);   
+    digitalWrite(revleft4, LOW);                                 
+    digitalWrite(fwdleft5, LOW);  
+    analogWrite(ena,80);   
+     analogWrite(enb,80); 
+    delay(500);
+  }
+
+}
